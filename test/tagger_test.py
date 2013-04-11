@@ -11,16 +11,22 @@ class TaggerTest(unittest.TestCase):
 
     def setUp(self):
         self.review = open('test_data/review.txt').read()
+        self.short_review = "wow, Hamburger is a great movie"
         self.review_words = nltk.word_tokenize(self.review)
-        self.features = ['screenplay', 'heart-warming', 'writing', 'unattractive', 'dfsdf']
-        self.top_words = ['the', 'and', 'a', 'of', 'is', 'to', 'it', 'movie', 'as', 'this', 'he',  'in', 'john', 'that', 'malkovich', 'movies']
-        self.review_pos = ast.literal_eval(open('test_data/review_pos.data').read())
-        self.review_pos_vb = ast.literal_eval(open('test_data/review_pos_vb.data').read())
-        self.review_feat = ast.literal_eval(open('test_data/review_feature.data').read())
-
-
-
-
+        self.features = ['screenplay', 'heart-warming', 'writing',
+            'unattractive', 'dfsdf']
+        self.top_words = [
+            'the', 'and', 'a', 'of', 'is', 'to', 'it', 'movie', 'as', 'this',
+            'he',  'in', 'john', 'that', 'malkovich', 'movies']
+        self.review_pos = sorted(ast.literal_eval(
+            open('test_data/review_pos.data').read()))
+        self.review_pos_vb = sorted(ast.literal_eval(
+            open('test_data/review_pos_vb.data').read()))
+        self.review_feat = ast.literal_eval(
+            open('test_data/review_feature.data').read())
+        self.short_review_pos = sorted(
+            [('great', 'JJ'), (',', ','), ('Hamburger', 'NNP'), ('wow', 'NN'),
+            ('movie', 'NN'), ('is', 'VBZ'), ('a', 'DT')])
 
     def test_onlyAlpha(self):
         data = tagger.onlyAlpha(self.review_words)
@@ -32,16 +38,16 @@ class TaggerTest(unittest.TestCase):
         self.assertEqual(
             tagger.checkFeatures(self.review_words, self.features), testAns)
 
-
     def test_getTopWords(self):
         top_words = tagger.getTopWords(self.review_words, .05)
         self.assertEqual(top_words, self.top_words)
 
     def test_posTagger(self):
-        pos = tagger.posTagger([self.review])
+        pos = tagger.posTagger([self.review, self.short_review])
         pos_vb = tagger.posTagger([self.review], 'VB')
-        self.assertEqual(pos, self.review_pos)
-        self.assertEqual(pos_vb, self.review_pos_vb)
+        total_pos = sorted(set(self.review_pos).union(self.short_review_pos))
+        self.assertEqual(sorted(pos), total_pos)
+        self.assertEqual(sorted(pos_vb), self.review_pos_vb)
 
     def test_document_features(self):
         features = tagger.document_features(self.review, self.review_pos)

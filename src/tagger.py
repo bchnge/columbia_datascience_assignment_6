@@ -23,12 +23,12 @@ def document_features(document, tagger_output):
     -----
     Use the nltk.word_tokenize() to break up your text into words 
     """
-   
+    doc_words = nltk.word_tokenize(document)
+    feature_words = [t[0] for t in tagger_output]
+    features = checkFeatures(doc_words, feature_words)
+
     return features
     
-
-
-
 
 def checkFeatures(document, feature_words):
     """
@@ -47,10 +47,10 @@ def checkFeatures(document, feature_words):
         keys are Sting (the words)
         values are Boolean (True if word in feature_words)
     """
+    wordsInDoc = set(document)
+    features = {word: word in wordsInDoc for word in feature_words}
+
     return features
-
-
-
 
 
 def onlyAlpha(document):
@@ -66,11 +66,9 @@ def onlyAlpha(document):
     -------
     words: list of strings
     """
-   
+    words = [word for word in document if word.isalpha()]
+
     return words
-
-
-
 
 
 def getTopWords(word_list, percent):
@@ -94,16 +92,19 @@ def getTopWords(word_list, percent):
     """
     ###get rid of non alphas in case you have any
     word_list = onlyAlpha(word_list)
+    wordFreqDist = nltk.FreqDist(word_list)
+    cutOffIndex = int(len(wordFreqDist)*percent)
+    top_words = wordFreqDist.keys()[: cutOffIndex + 1]
 
     return top_words
 
 
-
-
 def posTagger(documents, pos_type=None):
     """
-    Takes a list of strings, i.e. your documents, and tags all the words in the
-    string using the nltk.pos_tag().
+    Return all unique part of speech tags in documents.
+
+    Takes a list of strings, i.e. your documents, and tags all the words in
+    each string using the nltk.pos_tag().
     In addition if pos_type is not None the function will return only tuples
     (word, tag) tuples where tag is of type pos_type. For example, if
     pos_type = 'NN' we will get back all words tagged with "NN" "NNP" "NNS" etc
@@ -116,15 +117,30 @@ def posTagger(documents, pos_type=None):
     Returns
     -------
     tagged_words: list of tuples (word, pos)
+        One single list no matter how many documents you have.  
 
     Notes
     -----
-    You need to turn each string in your documents list into a list of words and you want to return a list of unique (word, tag) tuples. Use the nltk.word_tokenize() to break up your text into words but MAKE SURE you return only alpha characters words
+    You need to turn each string in your documents list into a list of words
+    and you want to return a list of unique (word, tag) tuples. Use the 
+    nltk.word_tokenize() to break up your text into words but MAKE SURE you
+    return only alpha characters words.  The order of the returned list does
+    not matter.
     """
+    tagged_word_set = set()
+    for document in documents:
+        doc_words = nltk.word_tokenize(document)
+        tags = nltk.pos_tag(doc_words)
+        tagged_word_set.update(set(tags))
+
+    if pos_type:
+        tagged_words = [
+            tag for tag in tagged_word_set if tag[0].isalpha 
+            and tag[1].startswith(pos_type)]
+    else:
+        tagged_words = [tag for tag in tagged_word_set if tag[0].isalpha]
+
     return tagged_words
-
-
-
 
 
 def bigramTagger(train_data, docs_to_tag, base_tagger=posTagger, pos_type=None):
@@ -145,7 +161,18 @@ def bigramTagger(train_data, docs_to_tag, base_tagger=posTagger, pos_type=None):
     -----
     You need to turn each string in your documents list into a list of words and you want to return a list of unique (word, tag) tuples. Use the nltk.word_tokenize() to break up your text into words but MAKE SURE you return only alpha characters words. Also, note that nltk.bigramTagger() is touchy and doesn't like [(word,tag)] - you need to make this a list of lists, i.e. [[(word,tag)]]
     """
+    pos_tag = base_tagger(train_data)
+    bigramTagger = nltk.BigramTagger([pos_tag])
 
+    tagged_words = set()
+    for document in docs_to_tag:
+        doc_words = nltk.word_tokenize(document)
+        tags = bigramTagger.tag(doc_words)
+        [tagged_words.add(tag) for tag in tags]
+    if pos_type:
+        tagged_words = [tag for tag in tagged_words if tag[1] and tag[0].isalpha and tag[1].startswith(pos_type)]
+    else:
+        tagged_words = [tag for tag in tagged_words if tag[0].isalpha]
 
     return tagged_words
 
