@@ -25,7 +25,7 @@ class TaggerTest(unittest.TestCase):
         self.review_feat = ast.literal_eval(
             open('test_data/review_feature.data').read())
         self.short_review_pos = sorted(
-            [('great', 'JJ'), (',', ','), ('Hamburger', 'NNP'), ('wow', 'NN'),
+            [('great', 'JJ'), ('Hamburger', 'NNP'), ('wow', 'NN'),
             ('movie', 'NN'), ('is', 'VBZ'), ('a', 'DT')])
 
     def test_onlyAlpha(self):
@@ -43,6 +43,7 @@ class TaggerTest(unittest.TestCase):
         self.assertEqual(top_words, self.top_words)
 
     def test_posTagger(self):
+        #import pdb; pdb.set_trace()
         pos = tagger.posTagger([self.review, self.short_review])
         pos_vb = tagger.posTagger([self.review], 'VB')
         total_pos = sorted(set(self.review_pos).union(self.short_review_pos))
