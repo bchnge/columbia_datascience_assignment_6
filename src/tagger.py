@@ -144,16 +144,14 @@ def posTagger(documents, pos_type=None):
     return only alpha characters words.  The order of the returned list does
     not matter.
     """
-    wordList = set()
-    tagged_words = set()
+    wordList = list()
+    tagged_wordsList = list()
     for doc in documents:
-        words = onlyAlpha(nltk.word_tokenize(doc))
-        wordList.update(words) 
-    wordList = list(wordList)
-        
-    tagged_words = nltk.pos_tag(wordList)
-    tagged_words = list(set(tagged_words))  
+        tagged_wordsList.append(nltk.pos_tag(onlyAlpha(nltk.word_tokenize(doc))))
+    tagged_words = [item for sublist in tagged_wordsList for item in sublist]
     
+    tagged_words = list(set(tagged_words)) # unique only 
+ 
     if pos_type is not None:
         tagged_words = [type for type in tagged_words if type[1].startswith(pos_type)]
     return tagged_words
