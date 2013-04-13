@@ -24,7 +24,9 @@ def document_features(document, tagger_output):
     -----
     Use the nltk.word_tokenize() to break up your text into words 
     """
- 
+    words = nltk.word_tokenize(document)
+    features = [tag[0] for tag in tagger_output]
+    features = checkFeatures(words, features)
     return features
     
 
@@ -142,10 +144,16 @@ def posTagger(documents, pos_type=None):
     return only alpha characters words.  The order of the returned list does
     not matter.
     """
-    words = onlyAlpha(nltk.word_tokenize(documents[0]))
-    tagged_words = nltk.pos_tag(words)
-    tagged_words = list(set(tagged_words)) #only unique
-
+    wordList = set()
+    tagged_words = set()
+    for doc in documents:
+        words = onlyAlpha(nltk.word_tokenize(doc))
+        wordList.update(words) 
+    wordList = list(wordList)
+        
+    tagged_words = nltk.pos_tag(wordList)
+    tagged_words = list(set(tagged_words))  
+    
     if pos_type is not None:
         tagged_words = [type for type in tagged_words if type[1].startswith(pos_type)]
     return tagged_words

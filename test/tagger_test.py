@@ -4,8 +4,8 @@ import numpy as np
 import pdb
 import nltk
 
-from naivebayes.src.classifier import NaiveBayes
-import naivebayes.src.tagger as tagger
+from homework_06.src.classifier import NaiveBayes
+import homework_06.src.tagger as tagger
 
 class TaggerTest(unittest.TestCase):
 
