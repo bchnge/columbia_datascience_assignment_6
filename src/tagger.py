@@ -1,6 +1,7 @@
 from collections import defaultdict
 import nltk
 import pdb
+import math
 
 
 
@@ -44,7 +45,17 @@ def checkFeatures(document, feature_words):
         keys are Sting (the words)
         values are Boolean (True if word in feature_words)
     """
+
+    intersection = list(set(document) & set(feature_words))
+    features = dict()
+    for f in feature_words:
+        try:
+            value = intersection.index(f)
+            features[f] = True
+        except ValueError:
+            features[f] = False      
     return features
+
 
 
 def onlyAlpha(document):
@@ -86,7 +97,21 @@ def getTopWords(word_list, percent):
     """
     ###get rid of non alphas in case you have any
 
+    word_list = onlyAlpha(word_list)
+    nWords = len(word_list)
+    
+    dist = nltk.FreqDist(word_list)
+    nTopWords = int(math.ceil(percent*len(dist.items())))
+
+    topList = dist.iteritems()
+    
+    top_words = []
+    for item in enumerate(topList):
+            if item[0]<nTopWords:
+                word = item[1][0]
+                top_words.append(word)     
     return top_words
+
 
 
 def posTagger(documents, pos_type=None):
@@ -117,7 +142,12 @@ def posTagger(documents, pos_type=None):
     return only alpha characters words.  The order of the returned list does
     not matter.
     """
+    words = onlyAlpha(nltk.word_tokenize(documents[0]))
+    tagged_words = nltk.pos_tag(words)
+    tagged_words = list(set(tagged_words)) #only unique
 
+    if pos_type is not None:
+        tagged_words = [type for type in tagged_words if type[1].startswith(pos_type)]
     return tagged_words
 
 
