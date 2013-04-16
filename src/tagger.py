@@ -1,6 +1,7 @@
 from collections import defaultdict
 import nltk
 import pdb
+import math
 
 
 
@@ -23,7 +24,9 @@ def document_features(document, tagger_output):
     -----
     Use the nltk.word_tokenize() to break up your text into words 
     """
- 
+    words = nltk.word_tokenize(document)
+    features = [tag[0] for tag in tagger_output]
+    features = checkFeatures(words, features)
     return features
     
 
@@ -44,7 +47,17 @@ def checkFeatures(document, feature_words):
         keys are Sting (the words)
         values are Boolean (True if word in feature_words)
     """
+
+    intersection = list(set(document) & set(feature_words))
+    features = dict()
+    for f in feature_words:
+        try:
+            value = intersection.index(f)
+            features[f] = True
+        except ValueError:
+            features[f] = False      
     return features
+
 
 
 def onlyAlpha(document):
@@ -86,7 +99,21 @@ def getTopWords(word_list, percent):
     """
     ###get rid of non alphas in case you have any
 
+    word_list = onlyAlpha(word_list)
+    nWords = len(word_list)
+    
+    dist = nltk.FreqDist(word_list)
+    nTopWords = int(math.ceil(percent*len(dist.items())))
+
+    topList = dist.iteritems()
+    
+    top_words = []
+    for item in enumerate(topList):
+            if item[0]<nTopWords:
+                word = item[1][0]
+                top_words.append(word)     
     return top_words
+
 
 
 def posTagger(documents, pos_type=None):
@@ -117,7 +144,16 @@ def posTagger(documents, pos_type=None):
     return only alpha characters words.  The order of the returned list does
     not matter.
     """
-
+    wordList = list()
+    tagged_wordsList = list()
+    for doc in documents:
+        tagged_wordsList.append(nltk.pos_tag(onlyAlpha(nltk.word_tokenize(doc))))
+    tagged_words = [item for sublist in tagged_wordsList for item in sublist]
+    
+    tagged_words = list(set(tagged_words)) # unique only 
+ 
+    if pos_type is not None:
+        tagged_words = [type for type in tagged_words if type[1].startswith(pos_type)]
     return tagged_words
 
 
