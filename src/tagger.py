@@ -173,5 +173,21 @@ def bigramTagger(train_data, docs_to_tag, base_tagger=posTagger, pos_type=None):
     You need to turn each string in your documents list into a list of words and you want to return a list of unique (word, tag) tuples. Use the nltk.word_tokenize() to break up your text into words but MAKE SURE you return only alpha characters words. Also, note that nltk.bigramTagger() is touchy and doesn't like [(word,tag)] - you need to make this a list of lists, i.e. [[(word,tag)]]
     """
 
+    tagged_set = set()
+
+    posTagged = base_tagger(train_data, pos_type)
+    bigram_tagger = nltk.BigramTagger([posTagged])
+
+    for doc in docs_to_tag:
+        words = nltk.word_tokenize(doc)
+        tagged = bigram_tagger.tag(words)
+        tagged_set.update(set(tagged))
+
+    if pos_type is not None:
+        tagged_words = [ tag for tag in tagged_set if tag[0].isalpha() and
+                tag[1].startswith(pos_type) ]
+    else:
+        tagged_words = [ tag for tag in tagged_set if tag[0].isalpha() ]
 
     return tagged_words
+    
