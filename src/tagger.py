@@ -3,8 +3,6 @@ import nltk
 import pdb
 import math
 
-
-
 def document_features(document, tagger_output):
     """
     This function takes a document and a tagger_output=[(word,tag)]
@@ -57,7 +55,6 @@ def checkFeatures(document, feature_words):
         except ValueError:
             features[f] = False      
     return features
-
 
 
 def onlyAlpha(document):
@@ -115,7 +112,6 @@ def getTopWords(word_list, percent):
     return top_words
 
 
-
 def posTagger(documents, pos_type=None):
     """
     Return all unique part of speech tags in documents.
@@ -144,16 +140,17 @@ def posTagger(documents, pos_type=None):
     return only alpha characters words.  The order of the returned list does
     not matter.
     """
-    wordList = list()
-    tagged_wordsList = list()
+    tagged_wordsList = set()
+
     for doc in documents:
-        tagged_wordsList.append(nltk.pos_tag(onlyAlpha(nltk.word_tokenize(doc))))
-    tagged_words = [item for sublist in tagged_wordsList for item in sublist]
+        tagged_wordsList.update(set(nltk.pos_tag(nltk.word_tokenize(doc))))
     
-    tagged_words = list(set(tagged_words)) # unique only 
- 
     if pos_type is not None:
-        tagged_words = [type for type in tagged_words if type[1].startswith(pos_type)]
+        tagged_words = [tag for tag in tagged_wordsList if
+                tag[1].startswith(pos_type) and tag[0].isalpha()]
+    else:
+        tagged_words = [tag for tag in tagged_wordsList if tag[0].isalpha()]
+
     return tagged_words
 
 
@@ -178,19 +175,3 @@ def bigramTagger(train_data, docs_to_tag, base_tagger=posTagger, pos_type=None):
 
 
     return tagged_words
-
-    
-    
-
-
-
-
-
-    
-
-
-
-
-
-
-
