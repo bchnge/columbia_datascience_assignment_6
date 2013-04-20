@@ -2,9 +2,9 @@ from nltk.corpus import movie_reviews
 import nltk
 import random
 
-from naivebayes.src.tagger import document_features
-import naivebayes.src.classifier as cl
-
+from homework_06.src.tagger import document_features
+import homework_06.src.classifier as cl
+import homework_06.src.tagger as tg
 
 def main():
     #get the movie data
@@ -18,17 +18,33 @@ def main():
     #####From here on it's up to you how you want to tag and classify the reviews
     
     # First, determine set of words to use for features. Consider using getTopwords
-    # from a set of reviews that are negative and a set of reviews that are positive
     
-    # once we have a list of words, we can use a tagger (either pos or bigram) to get a
-    # list of tuples [(word1, tag1),...]. Not sure how useful this really is because
-    # document_features doesn't even use the tag portion of the tuple.
+   
+    pos_reviews = [sent[0] for sent in train_data if sent[1]=='pos']
+    neg_reviews = [sent[0] for sent in train_data if sent[1]=='neg']
     
-    # For each review in the training data, use document_features and the list of tagged words
-    # to get a set of features 
+    # Take out all adjectives
+    tagged_pos = tg.posTagger(pos_reviews[0:25], pos_type = 'JJ')
+    tagged_neg = tg.posTagger(neg_reviews[0:25], pos_type = 'JJ')
     
-    # Now use that set of features and label to train data
+    pos_adj = [tag[0] for tag in tagged_pos]
+    neg_adj = [tag[0] for tag in tagged_neg]
     
+    pos_adj = tg.getTopWords(pos_adj,0.3)
+    neg_adj = tg.getTopWords(neg_adj,0.3)
+    
+    tagged_pos_final = [tag for tag in tagged_pos if tag[0] in pos_adj]
+    tagged_neg_final = [tag for tag in tagged_neg if tag[0] in neg_adj]
+    
+    tagged_features = list(set(tagged_pos_final).union(set(tagged_neg_final))) 
+    tagged_features = list(set(tagged_features))
+    
+    docData = []
+    for review in train_data:
+        review_features = document_features(review[0], tagged_features)
+        docData.append((review[1],review_features))
+        
+    # must pass docData into the classifier to train.
     # use the same set of features to test test_data
     
     
