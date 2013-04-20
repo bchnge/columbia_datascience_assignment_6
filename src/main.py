@@ -42,16 +42,16 @@ def main():
     docData = []
     for review in train_data:
         review_features = document_features(review[0], tagged_features)
-        docData.append((review[1],review_features))
+        review_features = review_features.items()
+        features = [feat[0] for feat in review_features if feat[1]==True]
+        docData.append((review[1],features))
         
-    # must pass docData into the classifier to train.
-    # use the same set of features to test test_data
-    
-    
-    # is there a function already builtin to classifier that calculates the accuracy/classification error?
-    
-    
- 
+        
+    classifier = cl.NaiveBayes(docData)
+
+# apply classifier to training data
+    for review in test_data:
+        classified = classifier.classify(review, prob=True)
     
     
     
