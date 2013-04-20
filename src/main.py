@@ -16,7 +16,25 @@ def main():
 
 
     #####From here on it's up to you how you want to tag and classify the reviews
-
+    
+    # First, determine set of words to use for features. Consider using getTopwords
+    # from a set of reviews that are negative and a set of reviews that are positive
+    
+    # once we have a list of words, we can use a tagger (either pos or bigram) to get a
+    # list of tuples [(word1, tag1),...]. Not sure how useful this really is because
+    # document_features doesn't even use the tag portion of the tuple.
+    
+    # For each review in the training data, use document_features and the list of tagged words
+    # to get a set of features 
+    
+    # Now use that set of features and label to train data
+    
+    # use the same set of features to test test_data
+    
+    
+    # is there a function already builtin to classifier that calculates the accuracy/classification error?
+    
+    
  
     
     
