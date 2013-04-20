@@ -47,11 +47,16 @@ def main():
         docData.append((review[1],features))
         
         
-    classifier = cl.NaiveBayes(docData)
+    classifier_basic = cl.NaiveBayes(docData)
+    classifier_log = cl.NaiveBayes(docData, log=True)
+    classifier_smoothed = cl.NaiveBayes(docData, smoothing=0.5)
+    classifier_log_smoothed = cl.NaiveBayes(docData, log=True, smoothing=0.5)
 
-# apply classifier to training data
     for review in test_data:
-        classified = classifier.classify(review, prob=True)
+        classified_basic = classifier_basic.classify(review)
+        classified_log = classifier_log.classify(review)
+        classified_smoothed = classifier_smoothed.classify(review)
+        classified_log_smoothed = classifier_log_smoothed.classify(review)
     
     
     
