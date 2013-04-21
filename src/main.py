@@ -52,14 +52,23 @@ def main():
     classifier_smoothed = cl.NaiveBayes(docData, smoothing=0.5)
     classifier_log_smoothed = cl.NaiveBayes(docData, log=True, smoothing=0.5)
 
-    for review in test_data:
-        classified_basic = classifier_basic.classify(review)
-        classified_log = classifier_log.classify(review)
-        classified_smoothed = classifier_smoothed.classify(review)
-        classified_log_smoothed = classifier_log_smoothed.classify(review)
+
+    classified_basic = []
+    classified_log = []
+    classified_smoothed = []
+    classified_log_smoothed = []
+    
+    tData = [review[0] for review in test_data]
     
     
+    for review in tData:
+        reviewTokenized = nltk.word_tokenize(review)
+        classified_basic.append(classifier_basic.classify(reviewTokenized, prob=True))
+        classified_log.append(classifier_log.classify(reviewTokenized, prob = True))
+        classified_smoothed.append(classifier_smoothed.classify(reviewTokenized, prob = True))
+        classified_log_smoothed.append(classifier_log_smoothed.classify(reviewTokenized, prob = True))
     
+    return classified_basic, classified_log, classified_smoothed, classified_log_smoothed    
    
    
 def getMovieData():
