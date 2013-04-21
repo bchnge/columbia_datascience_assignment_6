@@ -59,8 +59,7 @@ def main():
     classified_log_smoothed = []
     
     tData = [review[0] for review in test_data]
-    
-    
+      
     for review in tData:
         reviewTokenized = nltk.word_tokenize(review)
         classified_basic.append(classifier_basic.classify(reviewTokenized, prob=True))
@@ -68,7 +67,48 @@ def main():
         classified_smoothed.append(classifier_smoothed.classify(reviewTokenized, prob = True))
         classified_log_smoothed.append(classifier_log_smoothed.classify(reviewTokenized, prob = True))
     
-    return classified_basic, classified_log, classified_smoothed, classified_log_smoothed    
+    # Calculate error metrics using the basic classifier
+    tTruth = [review[1] for review in test_data]
+    
+    nPositive = 0
+    nNegative = 0
+    nTruePositive = 0
+    nFalsePositive = 0
+    nTrueNegative = 0
+    nFalseNegative = 0
+    
+
+    rindex=0
+    for review in tTruth:
+        if review == 'pos':
+            nPositive+=1
+            if classified_basic[rindex][0] == 'pos':
+                nTruePositive+=1
+            else:
+                nFalseNegative+=1
+        else:
+            nNegative+=1
+            if classified_basic[rindex][0] == 'pos':
+                nFalsePositive+=1
+            else:
+                nTrueNegative+=1
+        rindex+=1
+    
+    
+        
+    # SENSITIVITY: True positive rate...positives correctly classified / total positives
+    tpRate = float(nTruePositive)/nPositive
+    
+    
+    # FALSE ALARM: False positive rate...Negatives incorrectly classified / total negatives
+    fpRate = float(nFalsePositive)/nNegative
+    
+    # Specificity....1 - fp rate
+    specificity = float(nTrueNegative)/(nFalsePositive + nTrueNegative)
+    
+    
+    return  tpRate, fpRate, specificity
+    
    
    
 def getMovieData():
