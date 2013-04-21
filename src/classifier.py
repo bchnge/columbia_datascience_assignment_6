@@ -150,8 +150,8 @@ class ProbDist(object):
         self._value_counts = Series(value_counts)
         self._N = self._value_counts.sum()
         self._bins = len(self._value_counts)
-        self._smooth = 0.5
-
+        #self._smooth = 0.5
+        self._smooth = smooth
     @property
     def total(self):
         return self._N + self._bins * self._smooth
