@@ -30,7 +30,8 @@ class NaiveBayes(object):
         self.log = log
         self.smoothing = smoothing
         self.train(training_data)
-
+        self.cond_dist = self.train(training_data)
+        
     def train(self, data):
         """
         Re-train the classifier with given input training data.
@@ -47,6 +48,7 @@ class NaiveBayes(object):
             self._label_dist, self._cond_dist = train_data(data,
                                                            self.smoothing)
             self._labels = self._label_dist.samples
+        return self._cond_dist
 
     def classify(self, data, prob=False):
         """
